@@ -1,0 +1,31 @@
+<html>
+    <body>
+    hello world
+    <img src="http://www.hackpad.com" alt="pixel">
+    <img src="http://www.google.com" alt="pixel">
+    <img src="http://www.eff.org" alt="pixel">
+    <img src="http://mail.google.com" alt="pixel">
+    <img src="http://twitter.com" alt="pixel">
+    <img src="http://maxfocus.com" alt="pixel">
+    <img src="http://yammer.com" alt="pixel">
+    <script>
+        var errored = [];
+        var start;
+        var onload = function() {
+            console.log('loaded', this.src);
+        }
+        var onerror = function() {
+            var time = new Date().getTime();
+            var entry = {};
+            entry[this.src] = time - start;
+            errored.push(entry)
+        }
+        var images = document.getElementsByTagName('img');
+        start = new Date().getTime();
+        for (var i = 0; i < images.length; i++) {
+            images[i].onerror = onerror;
+            images[i].onload = onload;
+        }
+    </script>
+    </body>
+</html>
