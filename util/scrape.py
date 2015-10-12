@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Scrapes sites for HSTS headers."""
+"""Scrapes sites for HSTS headers, following redirects."""
 from twisted.python import failure
 from twisted.web._newclient import ResponseFailed
 from twisted.web import error
@@ -14,7 +14,8 @@ import sys
 
 class CustomRedirectAgent(RedirectAgent):
     """
-    A custom redirect agent that dumps where redirects are occurring.
+    A custom redirect agent that dumps where redirects are occurring and stops
+    redirecting as soon as an HSTS header is observed.
     """
     def _handleRedirect(self, response, method, uri, headers, redirectCount):
         """
@@ -50,6 +51,7 @@ class CustomRedirectAgent(RedirectAgent):
         """
         hsts_headers = response.headers.getRawHeaders(
             'Strict-Transport-Security', [])
+        # TODO: keep redirecting if STS max-age=0?
         if len(hsts_headers) > 0 and uri[:8] == 'https://':
             display(uri, response)
             return response
@@ -71,12 +73,15 @@ def display(uri, response):
 
 def main():
     """Main scrape loop."""
-    max_req = int(sys.argv[2])  # limited by system max files open
+    max_req = int(sys.argv[2])
     max_redirect = 4
     agent = CustomRedirectAgent(Agent(reactor), max_redirect)
     i = 0
     start = int(sys.argv[1])
 
+    # This list of likely sts hosts is thanks to a web scan from mid-2015
+    # by Scott Helme (https://scotthelme.co.uk). You may wish to substitute your
+    # own list.
     with open('strict-transport-security.txt') as stsfile:
         for line in islice(stsfile, start, start + max_req):
             i = i + 1
