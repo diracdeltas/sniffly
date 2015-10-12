@@ -7,7 +7,6 @@ from twisted.python.log import err as logerr
 from twisted.web.client import Agent, RedirectAgent
 from twisted.internet import reactor
 from twisted.web.http_headers import Headers
-import pprint
 from itertools import islice
 import sys
 
@@ -66,9 +65,8 @@ class CustomRedirectAgent(RedirectAgent):
 
 def display(uri, response):
     """Prints the uri and HSTS header."""
-    print uri
-    print pprint.pformat(list(response.headers.getRawHeaders(
-        'Strict-Transport-Security', [])))
+    print {uri: list(response.headers.getRawHeaders(
+        'Strict-Transport-Security', []))}
 
 
 def main():
