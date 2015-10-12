@@ -3,6 +3,7 @@
 from twisted.python import failure
 from twisted.web._newclient import ResponseFailed
 from twisted.web import error
+from twisted.python.log import err as logerr
 from twisted.web.client import Agent, RedirectAgent
 from twisted.internet import reactor
 from twisted.web.http_headers import Headers
@@ -35,6 +36,7 @@ class CustomRedirectAgent(RedirectAgent):
         deferred = self._agent.request(method, location, headers)
 
         def chain_response_(new_response):
+            """Chains responses"""
             new_response.setPreviousResponse(response)
             return new_response
         deferred.addCallback(chain_response_)
@@ -48,13 +50,10 @@ class CustomRedirectAgent(RedirectAgent):
         """
         hsts_headers = response.headers.getRawHeaders(
             'Strict-Transport-Security', [])
-        if len(hsts_headers) > 0:
+        if len(hsts_headers) > 0 and uri[:8] == 'https://':
             display(uri, response)
             return response
-        if response.code in self._redirectResponses:
-            if method not in ('GET', 'HEAD'):
-                err = error.PageRedirect(response.code, location=uri)
-                raise ResponseFailed([failure.Failure(err)], response)
+        elif response.code in self._redirectResponses:
             return self._handleRedirect(response, method, uri, headers,
                                         redirectCount)
         elif response.code in self._seeOtherResponses:
@@ -63,17 +62,17 @@ class CustomRedirectAgent(RedirectAgent):
         return response
 
 
-def display(domain, response):
-    """Prints the domain and HSTS header."""
-    print domain
+def display(uri, response):
+    """Prints the uri and HSTS header."""
+    print uri
     print pprint.pformat(list(response.headers.getRawHeaders(
         'Strict-Transport-Security', [])))
 
 
 def main():
     """Main scrape loop."""
-    max_req = int(sys.argv[2]) # limited by system max files open
-    max_redirect = 5
+    max_req = int(sys.argv[2])  # limited by system max files open
+    max_redirect = 4
     agent = CustomRedirectAgent(Agent(reactor), max_redirect)
     i = 0
     start = int(sys.argv[1])
@@ -84,12 +83,13 @@ def main():
             if i > max_req:
                 break
             domain = line.strip()
-            agent.request('GET', 'http://' + domain + '/',
-                          Headers({'User-Agent':
-                                   ['Mozilla/5.0 (Macintosh; Intel Mac OS X' +
-                                    ' 10_10_4) AppleWebKit/537.36 ' +
-                                    '(KHTML, like Gecko) ' +
-                                    'Chrome/45.0.2454.99 Safari/537.36']}))
+            d = agent.request('GET', 'http://' + domain + '/',
+                              Headers({'User-Agent':
+                                       ['Mozilla/5.0 (Macintosh; Intel Mac OS' +
+                                        ' X 10_10_4) AppleWebKit/537.36 ' +
+                                        '(KHTML, like Gecko) ' +
+                                        'Chrome/45.0.2454.99 Safari/537.36']}))
+            d.addErrback(logerr)
         reactor.run()
 
 
