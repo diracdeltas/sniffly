@@ -6,7 +6,6 @@ import ast
 from urlparse import urlparse
 import re
 import operator
-import pprint
 
 
 def get_hsts_preloads():
@@ -66,9 +65,14 @@ def main():
     # Filter out preloaded entries
     filtered = {k: v for (k, v) in results_dict.iteritems()
                 if not urlparse(k).hostname in preloads}
-    # Return a list of tuples ordered from highest to lowest max-age
-    pprint.pprint(
-        sorted(filtered.items(), key=operator.itemgetter(1), reverse=True))
+    # A list of tuples ordered from highest to lowest max-age
+    final = sorted(filtered.items(), key=operator.itemgetter(1), reverse=True)
+    for url, time in final:
+        # Pick entries with 30 day max age or more; otherwise the pins might
+        # expire before ToorCon :)
+        if time >= 2592000:
+            print '"' + url + '",'
+
 
 if __name__ == "__main__":
     main()
