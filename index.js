@@ -25,7 +25,8 @@ var hosts = [
 'http://www.digitalpoint.com/',
 'http://www.blibli.com/',
 'http://namu.wiki/',
-'http://launchpad.net/'
+'http://launchpad.net/',
+'http://hackpad.com/'
 ];
 
 var timings = {};  // (URL, load time) key-value pairs
