@@ -62,15 +62,13 @@ def main():
     with open(results) as results_file:
         for line in results_file:
             results_dict.update(get_url_and_max_age(line))
-    # Filter out preloaded entries
+    # Filter out preloaded entries. TODO: Check includeSubdomains
     filtered = {k: v for (k, v) in results_dict.iteritems()
                 if not urlparse(k).hostname in preloads}
     # A list of tuples ordered from highest to lowest max-age
     final = sorted(filtered.items(), key=operator.itemgetter(1), reverse=True)
     for url, time in final:
-        # Pick entries with 30 day max age or more; otherwise the pins might
-        # expire before ToorCon :)
-        if time >= 2592000:
+        if time >= 86400:
             print '"' + url + '",'
 
 
