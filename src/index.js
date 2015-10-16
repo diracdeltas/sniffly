@@ -2,7 +2,7 @@
 // TODO: Determine this dynamically from the distribution of response times.
 var TIMING_UPPER_THRESHOLD = 3;
 // Timing in milliseconds below which a request is probably a fluke.
-var TIMING_LOWER_THRESHOLD = -10;
+var TIMING_LOWER_THRESHOLD = -6;
 // Use an arbitrary static preloaded HSTS host for timing calibration
 var BENCHMARK_HOST = 'http://torproject.org/';
 // Initial timing calibration offset. This gets recalculated every other fetch.
