@@ -1,8 +1,10 @@
 // Timing in milliseconds above which a network request probably occurred.
 // TODO: Determine this dynamically from the distribution of response times.
-var TIMING_THRESHOLD = 6;
+var TIMING_UPPER_THRESHOLD = 3;
+// Timing in milliseconds below which a request is probably a fluke.
+var TIMING_LOWER_THRESHOLD = -10;
 // Use an arbitrary static preloaded HSTS host for timing calibration
-var BENCHMARK_HOST = 'http://eff.org/';
+var BENCHMARK_HOST = 'http://torproject.org/';
 // Initial timing calibration offset. This gets recalculated every other fetch.
 var OFFSET = 0;
 
@@ -346,7 +348,7 @@ function onImgError_(start, host) {
     // This is a calibration measurement so update the offset time.
     OFFSET = time;
   } else {
-    display(host, time - OFFSET);
+    display(host, time - OFFSET, OFFSET);
   }
 }
 
@@ -378,13 +380,14 @@ function calibrateTime() {
  * Display the results.
  * @param {string} url
  * @param {number} time
+ * @param {number} offset
  */
-function display(url, time) {
-  console.log(url, time, OFFSET);
+function display(url, time, offset) {
   var li = document.createElement('li');
   var host = url.replace('http://', '').split('/')[0];
   li.appendChild(document.createTextNode(host));
-  if (time < TIMING_THRESHOLD) {
+  if (time < TIMING_UPPER_THRESHOLD && time > TIMING_LOWER_THRESHOLD) {
+    console.log(url, time, offset);
     visitedElem.appendChild(li);
   } else {
     notVisitedElem.appendChild(li);
