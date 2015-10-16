@@ -1,7 +1,7 @@
 <html>
 <head>
     <!-- Abuse CSP to block HTTPS loads, increasing timing differentiation for HSTS vs non-HSTS hosts. :)
-         Note that this doesn't work in Firefox yet so you have to set the HTTP header in your server conf. -->
+         Note that this doesn't work in Firefox yet so you have to set the HTTP header in your server config file. -->
     <meta http-equiv="Content-Security-Policy" content="img-src http://*">
 </head>
 <body>
@@ -13,7 +13,6 @@
     <ul id="not_visited">
     </ul>
 </div>
-    <img id="fingerprint_hosts" alt='foo'>
     <script src="index.js">
     </script>
 </body>

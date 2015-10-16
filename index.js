@@ -1,12 +1,20 @@
 // Timing in milliseconds above which a network request probably occurred.
 // TODO: Determine this dynamically from the distribution of response times.
-var TIMING_THRESHOLD = 10;
+var TIMING_THRESHOLD = 6;
+// Use an arbitrary static preloaded HSTS host for timing calibration
+var BENCHMARK_HOST = 'http://eff.org/';
+// Initial timing calibration offset. This gets recalculated every other fetch.
+var OFFSET = 0;
 
-// You should edit this based on scraper results.
+var visitedElem = document.getElementById('visited');
+var notVisitedElem = document.getElementById('not_visited');
+
+// Edit this based on scraper results.
 var hosts = [
 'http://www.npmjs.com/',
 'http://www.xoom.com/',
 'http://atom.io/',
+'http://hackpad.com/',
 'http://angel.co/',
 'http://vine.co/',
 'http://www.oculus.com/en-us/',
@@ -25,60 +33,69 @@ var hosts = [
 'http://www.digitalpoint.com/',
 'http://www.blibli.com/',
 'http://namu.wiki/',
-'http://launchpad.net/',
-'http://hackpad.com/'
+'http://launchpad.net/'
 ];
 
-var timings = {};  // (URL, load time) key-value pairs
-var start = 0;  // Init global timer
-
-var img = document.getElementById('fingerprint_hosts');
-img.onerror = function() {
-  var time = new Date().getTime();
-  // Note how long it took for the error to fire.
-  timings[this.src] = time - start;
-  doNext();
-};
-img.onload = function() {
-  // Log that the URL happens to be a valid image; otherwise
-  // ignore it for now because I'm not sure how this affects timing.
-  console.log('LOADED', this.src);
-  doNext();
-};
-
 /**
- * The main state machine loop. Records load time for each host.
+ * Our CSP policy (HTTP-only images) causes this to fire whenever the img src
+ * redirects to HTTPS, either by HSTS (307) or plain old redirects (301/302).
+ * @param {number} start
+ * @param {string} host
+ * @private
  */
-function doNext() {
-  if (hosts.length === 0) {
-    done();
-    return;
-  }
-  var host = hosts.pop();
-  // Reset the global timer
-  start = new Date().getTime();
-  // Add nonce to src to force a non-cached response
-  img.src = host + '?foobar' + start.toString();
-}
-
-/**
- * All hosts have been loaded. Display the results.
- */
-function done() {
-  console.log(timings);
-  var visited = document.getElementById('visited');
-  var notVisited = document.getElementById('not_visited');
-  var li, url, host;
-  for (url in timings) {
-    li = document.createElement('li');
-    host = url.replace('http://', '').split('/')[0];
-    li.appendChild(document.createTextNode(host));
-    if (timings[url] < TIMING_THRESHOLD) {
-      visited.appendChild(li);
-    } else {
-      notVisited.appendChild(li);
-    }
+function onImgError_(start, host) {
+  var time = new Date().getTime() - start;
+  if (host === BENCHMARK_HOST) {
+    // This is a calibration measurement so update the offset time.
+    OFFSET = time;
+  } else {
+    display(host, time - OFFSET);
   }
 }
 
-doNext();
+/**
+ * Times how long a request takes by loading it as an img src and waiting for
+ * the error to fire. I would use XHR here but it turns out CORS errors fire
+ * before CSP.
+ * @param {string} host
+ */
+function timeRequest(host) {
+  var img = new Image();
+  img.onerror = onImgError_.bind(this, new Date().getTime(), host);
+  img.src = host + '?foobar' + Math.random().toString().substring(2);
+}
+
+/**
+ * Measures the calibration drift so we have a better estimate of how long
+ * a resource fetch actually took. Since we expect the time T to fetch a
+ * preloaded STS host to be ~constant, the fact that it changes indicates
+ * that our timing is getting skewed by some amount, probably due to JIT
+ * optimization. Correct for the skew by subtracting T from measurements that
+ * happen shortly after.
+ */
+function calibrateTime() {
+  timeRequest(BENCHMARK_HOST);
+}
+
+/**
+ * Display the results.
+ * @param {string} url
+ * @param {number} time
+ */
+function display(url, time) {
+  console.log(url, time, OFFSET);
+  var li = document.createElement('li');
+  var host = url.replace('http://', '').split('/')[0];
+  li.appendChild(document.createTextNode(host));
+  if (time < TIMING_THRESHOLD) {
+    visitedElem.appendChild(li);
+  } else {
+    notVisitedElem.appendChild(li);
+  }
+}
+
+// Main loop
+hosts.forEach(function(host) {
+  calibrateTime();
+  timeRequest(host);
+});
