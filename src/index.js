@@ -1,7 +1,8 @@
 // Timing in milliseconds above which a network request probably occurred.
 // TODO: Determine this dynamically from the distribution of response times.
 var TIMING_UPPER_THRESHOLD = 3;
-// Timing in milliseconds below which a request is probably a fluke.
+// Timing in milliseconds below which a request time is probably a measurement
+// fluke.
 var TIMING_LOWER_THRESHOLD = -6;
 // Use an arbitrary static preloaded HSTS host for timing calibration
 var BENCHMARK_HOST = 'http://torproject.org/';
@@ -352,6 +353,36 @@ function onImgError_(start, host) {
   }
 }
 
+
+/**
+ * Double-check whether hosts have been visited by trying synchronous image
+ * loads. I find this helps reduce the false positive rate in Chrome.
+ * @param {function(string, number)} callback
+ * @private
+ */
+function confirmVisited_(callback) {
+  var initial = 0;
+  var img = new Image();
+  function doNext_() {
+    if (visited.length === 0) {
+      return;
+    }
+    var host = visited.pop();
+    initial = new Date().getTime();
+    img.src = 'http://' + host + '?abc' + initial.toString();
+  }
+  img.onerror = function() {
+    var time = new Date().getTime();
+    callback(this.src, time - initial);
+    doNext_();
+  }
+  img.onload = function() {
+    console.log('LOADED', this.src);
+    doNext_();
+  }
+  doNext_();
+}
+
 /**
  * Times how long a request takes by loading it as an img src and waiting for
  * the error to fire. I would use XHR here but it turns out CORS errors fire
@@ -382,17 +413,25 @@ function calibrateTime() {
  * @param {number} time
  * @param {number} offset
  */
+var visited = [];
 function display(url, time, offset) {
   var li = document.createElement('li');
   var host = url.replace('http://', '').split('/')[0];
   li.appendChild(document.createTextNode(host));
   if (time < TIMING_UPPER_THRESHOLD && time > TIMING_LOWER_THRESHOLD) {
-    console.log(url, time, offset);
+    console.log(host, time, offset);
     visitedElem.appendChild(li);
+    visited.push(host);
   } else {
     notVisitedElem.appendChild(li);
   }
 }
+
+window.setTimeout(function() {
+  confirmVisited_(function(src, t) {
+    console.log('confirmed', src, t);
+  });
+}, 3000);
 
 // Main loop
 hosts.forEach(function(host) {
