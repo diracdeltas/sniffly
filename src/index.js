@@ -1,9 +1,13 @@
 // Timing in milliseconds above which a network request probably occurred.
 // TODO: Determine this dynamically from the distribution of response times.
-var TIMING_UPPER_THRESHOLD = 3;
+var TIMING_UPPER_THRESHOLD = 4;
 // Timing in milliseconds below which a request time is probably a measurement
 // fluke.
-var TIMING_LOWER_THRESHOLD = -6;
+var TIMING_LOWER_THRESHOLD = -10;
+// Timing allowance for a synchronous image load, used to confirm positive
+// results
+var TIMING_CONFIRM_THRESHOLD = 10;
+
 // Use an arbitrary static preloaded HSTS host for timing calibration
 var BENCHMARK_HOST = 'http://torproject.org/';
 // Initial timing calibration offset. This gets recalculated every other fetch.
@@ -334,7 +338,14 @@ var hosts =
 'http://www.opensuse.org/',
 'http://monitorbacklinks.com/',
 'http://www.5giay.vn/',
-'http://hackpad.com/'];
+'http://filippo.io/',
+'http://noncombatant.org/',
+'http://nonfreesoftware.org/',
+'http://hackpad.com/',
+'http://meta.discourse.org/',
+'http://titanous.com/',
+'http://smbmarketplace.cisco.com/',
+'http://www.cloudflare.com/'];
 
 /**
  * Our CSP policy (HTTP-only images) causes this to fire whenever the img src
@@ -377,6 +388,8 @@ function confirmVisited_(callback) {
     doNext_();
   }
   img.onload = function() {
+    // Should never happen but add a callback in case so it doesn't block the
+    // rest of the image requests from being sent.
     console.log('LOADED', this.src);
     doNext_();
   }
@@ -417,9 +430,11 @@ var visited = [];
 function display(url, time, offset) {
   var li = document.createElement('li');
   var host = url.replace('http://', '').split('/')[0];
+  li.id = host;
   li.appendChild(document.createTextNode(host));
   if (time < TIMING_UPPER_THRESHOLD && time > TIMING_LOWER_THRESHOLD) {
     console.log(host, time, offset);
+    li.style.color = 'lightgray';
     visitedElem.appendChild(li);
     visited.push(host);
   } else {
@@ -430,6 +445,13 @@ function display(url, time, offset) {
 window.setTimeout(function() {
   confirmVisited_(function(src, t) {
     console.log('confirmed', src, t);
+    var host = src.replace('http://', '').split('/')[0];
+    var elem = document.getElementById(host);
+    if (t > TIMING_CONFIRM_THRESHOLD) {
+      elem.style.color = 'white';
+    } else {
+      elem.style.color = '';
+    }
   });
 }, 3000);
 
