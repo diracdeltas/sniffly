@@ -15,6 +15,7 @@ var OFFSET = 0;
 
 var visitedElem = document.getElementById('visited');
 var notVisitedElem = document.getElementById('not_visited');
+var isFirefox = window.navigator.userAgent.contains('Firefox');
 
 // Edit this based on scraper results.
 var hosts =
@@ -81,7 +82,6 @@ var hosts =
 'http://www.cryptsy.com/',
 'http://vitalsource.com/',
 'http://pass.yandex.ua/?retpath=http%3A%2F%2Fwww.yandex.ua%2F',
-'http://www.cloudflare.com/',
 'http://www.yammer.com/',
 'http://ixquick.com/',
 'http://sbis.ru/',
@@ -341,7 +341,13 @@ var hosts =
 'http://nonfreesoftware.org/',
 'http://hackpad.com/',
 'http://meta.discourse.org/',
+'http://devinegan.com/',
+'http://ongardie.net/',
 'http://titanous.com/',
+'http://www.funkthat.com',
+'http://nelhage.com/',
+'http://yawnbox.com/',
+'http://rednerd.com',
 'http://smbmarketplace.cisco.com/',
 'http://www.cloudflare.com/'];
 
@@ -432,7 +438,9 @@ function display(url, time, offset) {
   li.appendChild(document.createTextNode(host));
   if (time < TIMING_UPPER_THRESHOLD && time > TIMING_LOWER_THRESHOLD) {
     console.log(host, time, offset);
-    li.style.color = 'lightgray';
+    if (!isFirefox) {
+      li.style.color = 'lightgray';
+    }
     visitedElem.appendChild(li);
     visited.push(host);
   } else {
@@ -440,18 +448,20 @@ function display(url, time, offset) {
   }
 }
 
-window.setTimeout(function() {
-  confirmVisited_(function(src, t) {
-    console.log('confirmed', src, t);
-    var host = src.replace('http://', '').split('/')[0];
-    var elem = document.getElementById(host);
-    if (t > TIMING_CONFIRM_THRESHOLD) {
-      elem.style.color = 'white';
-    } else {
-      elem.style.color = '';
-    }
-  });
-}, 3000);
+if (!isFirefox) {
+  window.setTimeout(function() {
+    confirmVisited_(function(src, t) {
+      console.log('confirmed', src, t);
+      var host = src.replace('http://', '').split('/')[0];
+      var elem = document.getElementById(host);
+      if (t > TIMING_CONFIRM_THRESHOLD) {
+        elem.style.color = 'white';
+      } else {
+        elem.style.color = '';
+      }
+    });
+  }, 3000);
+}
 
 // Main loop
 hosts.forEach(function(host) {
