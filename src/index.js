@@ -15,7 +15,7 @@ var OFFSET = 0;
 
 var visitedElem = document.getElementById('visited');
 var notVisitedElem = document.getElementById('not_visited');
-var isFirefox = window.navigator.userAgent.contains('Firefox');
+var isFirefox = (window.navigator.userAgent.indexOf('Firefox') !== -1);
 
 // Edit this based on scraper results.
 var hosts =
@@ -336,7 +336,6 @@ var hosts =
 'http://www.opensuse.org/',
 'http://monitorbacklinks.com/',
 'http://www.5giay.vn/',
-'http://filippo.io/',
 'http://noncombatant.org/',
 'http://nonfreesoftware.org/',
 'http://hackpad.com/',
@@ -439,7 +438,7 @@ function display(url, time, offset) {
   if (time < TIMING_UPPER_THRESHOLD && time > TIMING_LOWER_THRESHOLD) {
     console.log(host, time, offset);
     if (!isFirefox) {
-      li.style.color = 'lightgray';
+      li.style.color = 'gray';
     }
     visitedElem.appendChild(li);
     visited.push(host);
