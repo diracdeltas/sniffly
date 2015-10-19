@@ -4,6 +4,7 @@ Sniffly is an attack that abuses HTTP Strict Transport Security and Content
 Security Policy to allow arbitrary websites to sniff a user's browsing history.
 It has been tested in Firefox and Chrome.
 
+
 ## Directory structure
 
 * `util/`: Sniffly works by guessing-and-checking whether a user has HSTS noted
@@ -28,6 +29,7 @@ server {
 }
 ```
 
+
 ## How it works
 
 I recommend reading the inline comments in `src/index.js` to understand
@@ -48,3 +50,37 @@ polluting the local HSTS store (turns out this is non-trivial). tl;dr version:
    has visited the image's domain before. If it's on the order of 100
    milliseconds, then a network request probably occurred, meaning that the
    user hasn't visited the image's domain.
+
+
+### Finding HSTS hosts
+
+To scrape an included list of sites (`util/strict-transport-security.txt`, courtesy Scott Helme) to determine which hosts send HSTS headers, do:
+
+```
+$ cd util
+$ ./run.sh <number_of_batches> > results.log
+```
+
+where 1 batch is 100 sites. You can override
+`util/strict-transport-security.txt` with a different list if you want.
+
+To process and sort the results by max-age, excluding ones with max-age less
+than 1 day and ones that are preloaded:
+
+```
+$ cd util
+$ ./process.py <results_file> > processed.log
+```
+
+Once that's done, you can copy the hosts from `processed.log` into
+`src/index.js`.
+
+
+# Acknowledgements
+
+* Scott Helme for an initial list of HSTS hosts that he had found so I didn't
+  have to scan the entire Alexa 1M.
+* Chris Palmer for advising on how to file a privacy bug in Chrome.
+* Dan Kaminsky and WhiteOps for sponsoring the ToorCon trip where this was
+  presented.
+* Everyone who let me sleep on their couch while I did this over my "vacation break". You know who you are!
