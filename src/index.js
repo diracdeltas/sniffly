@@ -1,11 +1,18 @@
+/**
+ * @fileoverview This file loads a bunch of HSTS domains and times how long it
+ * takes for them to be redirected from HTTP to HTTPS. Based on that, it
+ * decides whether the domain is a previously-noted HSTS domain or not.
+ * @author yan <yan@mit.edu>
+ */
+
 // Timing in milliseconds above which a network request probably occurred.
 // TODO: Determine this dynamically from the distribution of response times.
 var TIMING_UPPER_THRESHOLD = 4;
 // Timing in milliseconds below which a request time is probably a measurement
 // fluke.
 var TIMING_LOWER_THRESHOLD = -10;
-// Timing allowance for a synchronous image load, used to confirm positive
-// results
+// Timing allowance for a synchronous image load, which we use to confirm
+// positive results in Chrome.
 var TIMING_CONFIRM_THRESHOLD = 10;
 
 // Use an arbitrary static preloaded HSTS host for timing calibration
@@ -353,16 +360,19 @@ var hosts =
 /**
  * Our CSP policy (HTTP-only images) causes this to fire whenever the img src
  * redirects to HTTPS, either by HSTS (307) or plain old redirects (301/302).
- * @param {number} start
- * @param {string} host
+ * @param {number} start Time when the image load started
+ * @param {string} host The host that fired the error
  * @private
  */
 function onImgError_(start, host) {
   var time = new Date().getTime() - start;
   if (host === BENCHMARK_HOST) {
-    // This is a calibration measurement so update the offset time.
+    // This is just a calibration measurement so update the offset time.
     OFFSET = time;
   } else {
+    // We need to subtract offset, otherwise hosts that are further down on the
+    // page seem to have higher load times because of the time that it took for
+    // the DOM to load.
     display(host, time - OFFSET, OFFSET);
   }
 }
@@ -370,8 +380,10 @@ function onImgError_(start, host) {
 
 /**
  * Double-check whether hosts have been visited by trying synchronous image
- * loads. I find this helps reduce the false positive rate in Chrome.
- * @param {function(string, number)} callback
+ * loads, which have cleaner timing profiles. I find this helps reduce the
+ * false positive rate in Chrome. AFAICT, the async image-load sniffing method
+ * works great in Firefox so this isn't necessary there.
+ * @param {function(string, number)} callback Gets called when img error fires.
  * @private
  */
 function confirmVisited_(callback) {
@@ -410,6 +422,7 @@ function confirmVisited_(callback) {
 function timeRequest(host) {
   var img = new Image();
   img.onerror = onImgError_.bind(this, new Date().getTime(), host);
+  // Add random params so we don't hit the cache
   img.src = host + '?foobar' + Math.random().toString().substring(2);
 }
 
@@ -417,8 +430,8 @@ function timeRequest(host) {
  * Measures the calibration drift so we have a better estimate of how long
  * a resource fetch actually took. Since we expect the time T to fetch a
  * preloaded STS host to be ~constant, the fact that it changes indicates
- * that our timing is getting skewed by some amount, probably due to JIT
- * optimization. Correct for the skew by subtracting T from measurements that
+ * that our timing is getting skewed by some amount, probably due to DOM
+ * processing. Correct for the skew by subtracting T from measurements that
  * happen shortly after.
  */
 function calibrateTime() {
@@ -440,6 +453,8 @@ function display(url, time, offset) {
   if (time < TIMING_UPPER_THRESHOLD && time > TIMING_LOWER_THRESHOLD) {
     console.log(host, time, offset);
     if (!isFirefox) {
+      // If we are in Chrome, hide the results for now because the false
+      // positive rate is really high until confirmVisited_() is called.
       li.style.display = 'none';
     }
     visitedElem.appendChild(li);
@@ -450,11 +465,13 @@ function display(url, time, offset) {
 }
 
 if (!isFirefox) {
+  // Chrome needs to do an extra timing confirmation step for results to be not
+  // shitty. Wait 3 seconds for the async loads to mostly finish, then try one
+  // synchrous load for each potentially-visited host.
   var disclaimer = document.getElementById('disclaimer');
   disclaimer.style.display = '';
   window.setTimeout(function() {
     confirmVisited_(function(src, t) {
-      console.log('confirmed', src, t);
       var host = src.replace('http://', '').split('/')[0];
       var elem = document.getElementById(host);
       if (t > TIMING_CONFIRM_THRESHOLD) {
