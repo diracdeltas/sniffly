@@ -72,6 +72,16 @@ server {
 ```
 
 
+# Caveats
+
+* Not supported yet in Safari or Chrome on iOS.
+* Extensions such as HTTPS Everywhere will mess up results.
+* Doesn't work reliably in Tor Browser since timings are rounded to the nearest
+  100-millisecond.
+* Users with a different HSTS preload list (ex: due to having an older browser)
+  may not see accurate results.
+
+
 # Acknowledgements
 
 * Scott Helme for an initial list of HSTS hosts that he had found so I didn't
@@ -79,4 +89,5 @@ server {
 * Chris Palmer for advising on how to file a privacy bug in Chrome.
 * Dan Kaminsky and WhiteOps for sponsoring the ToorCon trip where this was
   presented.
+* Jan Schaumann and Chris Palmer for being early testers.
 * Everyone who let me sleep on their couch while I did this over my "vacation break". You know who you are!
