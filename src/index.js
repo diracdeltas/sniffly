@@ -381,7 +381,9 @@ function confirmVisited_(callback) {
     if (visited.length === 0) {
       return;
     }
-    var host = visited.pop();
+    // Shift instead of pop since we may still be adding hosts to the array
+    // while this is running.
+    var host = visited.shift();
     initial = new Date().getTime();
     img.src = 'http://' + host + '?abc' + initial.toString();
   }
@@ -438,7 +440,7 @@ function display(url, time, offset) {
   if (time < TIMING_UPPER_THRESHOLD && time > TIMING_LOWER_THRESHOLD) {
     console.log(host, time, offset);
     if (!isFirefox) {
-      li.style.color = 'gray';
+      li.style.display = 'none';
     }
     visitedElem.appendChild(li);
     visited.push(host);
@@ -448,17 +450,22 @@ function display(url, time, offset) {
 }
 
 if (!isFirefox) {
+  var disclaimer = document.getElementById('disclaimer');
+  disclaimer.style.display = '';
   window.setTimeout(function() {
     confirmVisited_(function(src, t) {
       console.log('confirmed', src, t);
       var host = src.replace('http://', '').split('/')[0];
       var elem = document.getElementById(host);
       if (t > TIMING_CONFIRM_THRESHOLD) {
-        elem.style.color = 'white';
+        notVisitedElem.appendChild(elem);
       } else {
-        elem.style.color = '';
+        elem.style.display = '';
       }
     });
+    window.onload = function() {
+      disclaimer.style.display = 'none';
+    }
   }, 3000);
 }
 
