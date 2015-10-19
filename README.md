@@ -5,31 +5,6 @@ Security Policy to allow arbitrary websites to sniff a user's browsing history.
 It has been tested in Firefox and Chrome.
 
 
-## Directory structure
-
-* `util/`: Sniffly works by guessing-and-checking whether a user has HSTS noted
-  for a given site that sends dynamic HSTS headers (but is not preloaded). To
-  make this easier, here are scripts to quickly scrape a large number of sites
-  (for instane, the Alexa Top 1M) to figure out what URLs are sending HSTS
-  headers and filter out the ones that are preloaded.
-* `src/`: Here's the HTML and js that does the sniffing. Note that since
-  Firefox does not yet support CSP headers using the <meta> HTML tag, you will
-  have to set up a local webserver to set CSP via an HTTP response header. My
-  Nginx conf looks something like this:
-
-```
-server {
-    listen 8081;
-    server_name localhost;
-    location / {
-        root /path/to/sniffly/src;
-        add_header Content-Security-Policy "img-src http://*";
-        index index.html;
-    }
-}
-```
-
-
 ## How it works
 
 I recommend reading the inline comments in `src/index.js` to understand
@@ -62,7 +37,8 @@ $ ./run.sh <number_of_batches> > results.log
 ```
 
 where 1 batch is 100 sites. You can override
-`util/strict-transport-security.txt` with a different list if you want.
+`util/strict-transport-security.txt` with a different list, such as the full
+Alexa Top 1M, if you want.
 
 To process and sort the results by max-age, excluding ones with max-age less
 than 1 day and ones that are preloaded:
@@ -74,6 +50,26 @@ $ ./process.py <results_file> > processed.log
 
 Once that's done, you can copy the hosts from `processed.log` into
 `src/index.js`.
+
+
+### Running sploitz
+
+Visiting `file:///path/to/sniffly/src/index.html` in Chrome should just work.
+In Firefox, CSP headers using the <meta> tag are apparently not supported yet,
+so you need to set up a local webserver to serve the CSP HTTP response
+header. My Nginx server block looks something like this:
+
+```
+server {
+    listen 8081;
+    server_name localhost;
+    location / {
+        root /path/to/sniffly/src;
+        add_header Content-Security-Policy "img-src http://*";
+        index index.html;
+    }
+}
+```
 
 
 # Acknowledgements
