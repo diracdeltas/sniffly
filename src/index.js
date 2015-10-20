@@ -397,7 +397,7 @@ function confirmVisited_(callback) {
     // while this is running.
     var host = visited.shift();
     initial = new Date().getTime();
-    img.src = 'http://' + host + '?abc' + initial.toString();
+    img.src = 'http://' + host + '?' + initial.toString();
   }
   img.onerror = function() {
     var time = new Date().getTime();
@@ -423,7 +423,7 @@ function timeRequest(host) {
   var img = new Image();
   img.onerror = onImgError_.bind(this, new Date().getTime(), host);
   // Add random params so we don't hit the cache
-  img.src = host + '?foobar' + Math.random().toString().substring(2);
+  img.src = host + '?' + Math.random().toString().substring(2);
 }
 
 /**
@@ -444,7 +444,7 @@ function calibrateTime() {
  * @param {number} time
  * @param {number} offset
  */
-var visited = [];
+var visited = []; // list of hosts that are potentially visited
 function display(url, time, offset) {
   var li = document.createElement('li');
   var host = url.replace('http://', '').split('/')[0];
@@ -474,9 +474,8 @@ if (!isFirefox) {
     confirmVisited_(function(src, t) {
       var host = src.replace('http://', '').split('/')[0];
       var elem = document.getElementById(host);
-      if (t > TIMING_CONFIRM_THRESHOLD) {
-        notVisitedElem.appendChild(elem);
-      } else {
+      if (t < TIMING_CONFIRM_THRESHOLD) {
+        console.log('confirmed', src, t);
         elem.style.display = '';
       }
     });
