@@ -470,7 +470,6 @@ if (!isFirefox) {
   // Chrome needs to do an extra timing confirmation step for results to be not
   // shitty. Wait 3 seconds for the async loads to mostly finish, then try one
   // synchrous load for each potentially-visited host.
-  document.getElementById('not_visited_container').style.display = 'none';
   var disclaimer = document.getElementById('disclaimer');
   disclaimer.style.display = '';
   window.setTimeout(function() {
@@ -490,7 +489,6 @@ if (!isFirefox) {
         notVisitedElem.appendChild(elem);
       }
     }, function() {
-      document.getElementById('not_visited_container').style.display = '';
       disclaimer.style.color = 'green';
       disclaimer.innerText = 'Done!';
     });
