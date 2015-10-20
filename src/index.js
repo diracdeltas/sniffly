@@ -384,13 +384,15 @@ function onImgError_(start, host) {
  * false positive rate in Chrome. AFAICT, the async image-load sniffing method
  * works great in Firefox so this isn't necessary there.
  * @param {function(string, number)} callback Gets called when img error fires.
+ * @param {function()} finished Called when all loads are done.
  * @private
  */
-function confirmVisited_(callback) {
+function confirmVisited_(callback, finished) {
   var initial = 0;
   var img = new Image();
   function doNext_() {
     if (visited.length === 0) {
+      finished();
       return;
     }
     // Shift instead of pop since we may still be adding hosts to the array
@@ -455,7 +457,7 @@ function display(url, time, offset) {
     if (!isFirefox) {
       // If we are in Chrome, hide the results for now because the false
       // positive rate is really high until confirmVisited_() is called.
-      li.style.display = 'none';
+      li.style.color = 'lightgray';
     }
     visitedElem.appendChild(li);
     visited.push(host);
@@ -468,20 +470,30 @@ if (!isFirefox) {
   // Chrome needs to do an extra timing confirmation step for results to be not
   // shitty. Wait 3 seconds for the async loads to mostly finish, then try one
   // synchrous load for each potentially-visited host.
+  document.getElementById('not_visited_container').style.display = 'none';
   var disclaimer = document.getElementById('disclaimer');
   disclaimer.style.display = '';
   window.setTimeout(function() {
     confirmVisited_(function(src, t) {
+      if (!disclaimer.done_) {
+        disclaimer.style.color = 'orange';
+        disclaimer.innerText = 'Removing false positives . . .';
+        disclaimer.done_ = true;
+      }
       var host = src.replace('http://', '').split('/')[0];
       var elem = document.getElementById(host);
       if (t < TIMING_CONFIRM_THRESHOLD) {
         console.log('confirmed', src, t);
-        elem.style.display = '';
+        elem.style.color = '';
+      } else {
+        elem.style.display = 'none';
+        notVisitedElem.appendChild(elem);
       }
+    }, function() {
+      document.getElementById('not_visited_container').style.display = '';
+      disclaimer.style.color = 'green';
+      disclaimer.innerText = 'Done!';
     });
-    window.onload = function() {
-      disclaimer.style.display = 'none';
-    }
   }, 3000);
 }
 
