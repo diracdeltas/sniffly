@@ -1,6 +1,6 @@
 <html>
 <head>
-    <!-- Abuse CSP to block HTTPS loads, increasing timing differentiation for HSTS vs non-HSTS hosts. :)
+    <!-- Abuse CSP to block HTTPS loads, increasing timing differentiation for cached vs non-cached hosts. :)
          Note that this doesn't work in Firefox yet so you have to set the HTTP header in your server config file. -->
     <meta http-equiv="Content-Security-Policy" content="img-src http://*">
     <!-- For browsers that don't support CSP referer policy -->
@@ -8,10 +8,9 @@
 </head>
 <body>
 <div id="content">
-    <div style="background-color: red; padding: 10px; font-weight: bold;">Hello! This is a demo of Sniffly, a practical timing attack to sniff browser history using redirect cache timing. Please disable <a href="https://eff.org/https-everywhere">HTTPS Everywhere</a> for best results.</div>
+    <div style="background-color: red; padding: 10px; font-weight: bold;">Hello! This is a demo of ReSniff, a not-very-practical timing attack to sniff browser history using redirect cache timing. Please disable <a href="https://eff.org/https-everywhere">HTTPS Everywhere</a> for best results.</div>
     <div style="display: block; float: left; padding-right: 50px;" id="visited_container">
     <h3>Sites you've probably visited:</h3>
-    <div id="disclaimer" style="display:none; color:red; font-weight:bold;">Calculating (may take several seconds) . . .</div>
     <ul id="visited">
     </ul>
     </div>
