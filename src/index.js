@@ -3,11 +3,13 @@
  * takes for them to be redirected from HTTP to HTTPS. Based on that, it
  * decides whether the domain is a previously-noted HSTS domain or not.
  * @author yan <yan@mit.edu>
+ * @license MIT
+ * @version 0.1.0
  */
 
 // Timing in milliseconds above which a network request probably occurred.
 // TODO: Determine this dynamically from the distribution of response times.
-var TIMING_UPPER_THRESHOLD = 4;
+var TIMING_UPPER_THRESHOLD = 5;
 // Timing in milliseconds below which a request time is probably a measurement
 // fluke.
 var TIMING_LOWER_THRESHOLD = -10;
@@ -89,13 +91,13 @@ var hosts =
 'http://hotwords.com/',
 'http://www.cryptsy.com/',
 'http://vitalsource.com/',
-'http://pass.yandex.ua/?retpath=http%3A%2F%2Fwww.yandex.ua%2F',
+'http://pass.yandex.ua/',
 'http://www.yammer.com/',
 'http://ixquick.com/',
 'http://sbis.ru/',
 'http://www.ecosia.org/',
 'http://www.freecycle.org/',
-'http://pass.yandex.by/?retpath=http%3A%2F%2Fwww.yandex.by%2F',
+'http://pass.yandex.by/',
 'http://www.mailjet.com/',
 'http://www.yugster.com/',
 'http://tinypng.com/',
@@ -130,7 +132,7 @@ var hosts =
 'http://www.sparebank1.no/bank/',
 'http://spotify.com/',
 'http://creditkarma.com/',
-'http://www.paxum.com/payment/phrame.php?action=displayIndex',
+'http://www.paxum.com/payment/phrame.php',
 'http://jamberrynails.net/',
 'http://fotolia.com/',
 'http://stacksocial.com/',
@@ -209,7 +211,7 @@ var hosts =
 'http://www.bawagpsk.com/BAWAGPSK/PK',
 'http://www.crunchbase.com/',
 'http://www.maketecheasier.com/',
-'http://session.wikispaces.com/1/auth/auth?authToken=4753096aabc3a25fd80467fb292f1873',
+'http://session.wikispaces.com/1/auth/auth',
 'http://witkit.com/',
 'http://pixabay.com/',
 'http://www.mygreatlakes.org/',
@@ -232,7 +234,7 @@ var hosts =
 'http://www.pebble.com/',
 'http://www.periscope.tv/',
 'http://generalassemb.ly/',
-'http://login.szn.cz/?returnURL=http%3a%2f%2femail.seznam.cz%2f&serviceId=email',
+'http://login.szn.cz/',
 'http://www.lyft.com/',
 'http://www.mql5.com/',
 'http://www.wrike.com/',
@@ -247,7 +249,7 @@ var hosts =
 'http://www.bankofthewest.com/',
 'http://roem.ru/',
 'http://www.carthrottle.com/',
-'http://pass.yandex.kz/?retpath=http%3A%2F%2Fwww.yandex.kz%2F',
+'http://pass.yandex.kz/',
 'http://gumroad.com/',
 'http://www.hosteurope.de/',
 'http://www.canva.com/',
@@ -356,7 +358,13 @@ var hosts =
 'http://yawnbox.com/',
 'http://rednerd.com',
 'http://smbmarketplace.cisco.com/',
-'http://www.cloudflare.com/'];
+'http://www.cloudflare.com/',
+'http://letsencrypt.org/',
+'http://helloworld.letsencrypt.org/',
+'http://hoffman-andrews.com/',
+'http://jdkasten.com/',
+'http://jhalderm.com/'
+];
 
 /**
  * Gets hostname from URL.
