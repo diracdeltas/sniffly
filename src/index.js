@@ -9,21 +9,15 @@
 
 // Timing allowance for a synchronous image load, which we use to confirm
 // positive results in Chrome.
-var TIMING_CONFIRM_THRESHOLD = 100;
+var TIMING_CONFIRM_THRESHOLD = 20;
 
 // Edit this based on scraper results.
 var hosts = [
   'kruug.org',
   'www.google.com',
-  'eecs388.org'
-]
-
-/**
- * Gets hostname from URL.
- */
-function getHost_(url) {
-  return url.replace('http://', '').split(/\/|\?/)[0];
-}
+  'eecs388.org',
+  'www.virginamerica.com'
+];
 
 
 /**
@@ -38,24 +32,22 @@ function getHost_(url) {
 function confirmVisited_(callback, finished) {
   var initial; // initial time
   var img = new Image();
-  var timeouts = []; // array of timeout IDs
   var dummySrc = 'http://example.com/'; // URL for timer initialization
   function doNext_() {
-    if (visited.length === 0) {
+    if (hosts.length === 0) {
       finished();
       return;
     }
     // Shift instead of pop since we are pushing hosts into the array while
     // this is running
-    var host = visited.shift();
+    var host = hosts.shift();
     initial = new Date().getTime();
     var src = 'http://' + host + '/';
     img.src = src;
   }
   img.onerror = function() {
     if (this.src !== dummySrc) {
-      var host = getHost_(this.src);
-      callback(host, new Date().getTime() - initial);
+      callback(this.src, new Date().getTime() - initial);
     } else {
       console.log('initialized timer using', this.src);
     }
