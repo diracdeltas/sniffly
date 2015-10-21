@@ -526,7 +526,7 @@ if (!isFirefox) {
         console.warn('No element found', host);
         return;
       }
-      if (t < TIMING_CONFIRM_THRESHOLD) {
+      if (t <= TIMING_CONFIRM_THRESHOLD / 2) {
         console.log('showing', host, t);
         elem.style.color = '';
       } else {
