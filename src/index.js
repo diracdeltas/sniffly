@@ -9,22 +9,44 @@
 
 // Timing allowance for a synchronous image load, which we use to confirm
 // positive results in Chrome.
-var TIMING_CONFIRM_THRESHOLD = 20;
+var TIMING_CONFIRM_THRESHOLD = 10;
 
 // Edit this based on scraper results.
 var hosts = [
-  'kruug.org',
-  'www.google.com',
-  'eecs388.org',
-  'www.virginamerica.com'
+'http://kruug.org/',
+'http://eecs388.org/',
+'http://chase.com/',
+'http://soundcloud.com/',
+'http://wellsfargo.com/',
+'http://salesforce.com/',
+'http://washingtonpost.com/',
+'http://www.bankofamerica.com/',
+'http://mozilla.org/',
+'http://americanexpress.com/',
+'http://archive.org/',
+'http://hootsuite.com/',
+'http://wordpress.com/',
+'http://www.usps.com/',
+'http://www.capitalone.com/',
+'http://rt.com/',
+'http://scribd.com/',
+'http://vid.me/',
+'http://torrentz.eu/',
+'http://pinimg.com/',
+'http://citi.com/',
+'http://fiverr.com/',
+'http://disqus.com/',
+'http://surveymonkey.com/',
+'http://torrentz.in/',
+'http://www.neobux.com/',
+'http://www.exoclick.com/',
 ];
 
+var visitedElem = document.getElementById('visited');
+var notVisitedElem = document.getElementById('not_visited');
 
 /**
- * Double-check whether hosts have been visited by trying synchronous image
- * loads, which have cleaner timing profiles. I find this helps reduce the
- * false positive rate in Chrome. AFAICT, the async image-load sniffing method
- * works great in Firefox so this isn't necessary there.
+ * Check whether a host has been visited, synchronously
  * @param {function(string, number)} callback Gets called when img error fires.
  * @param {function()} finished Called when all loads are done.
  * @private
@@ -32,7 +54,7 @@ var hosts = [
 function confirmVisited_(callback, finished) {
   var initial; // initial time
   var img = new Image();
-  var dummySrc = 'http://example.com/'; // URL for timer initialization
+  var dummySrc = 'https://example.com/'; // URL for timer initialization
   function doNext_() {
     if (hosts.length === 0) {
       finished();
@@ -42,8 +64,7 @@ function confirmVisited_(callback, finished) {
     // this is running
     var host = hosts.shift();
     initial = new Date().getTime();
-    var src = 'http://' + host + '/';
-    img.src = src;
+    img.src = host;
   }
   img.onerror = function() {
     if (this.src !== dummySrc) {
@@ -61,14 +82,18 @@ function confirmVisited_(callback, finished) {
   };
   // Set the image source initially to a dummy URL b/c the first load seems to
   // always take a long time no matter what.
-  img.src = 'http://example.com/';
+  img.src = dummySrc;
 }
 
 confirmVisited_(function(host, t) {
+  var li = document.createElement('li');
+  li.appendChild(document.createTextNode(host));
   if (t < TIMING_CONFIRM_THRESHOLD) {
     console.log('visited', host, t);
+    visitedElem.appendChild(li);
   } else {
     console.log('unvisited', host, t);
+    notVisitedElem.appendChild(li);
   }
 }, function() {
   console.log('done!');
