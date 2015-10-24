@@ -4,12 +4,20 @@ Sniffly is an attack that abuses HTTP Strict Transport Security and Content
 Security Policy to allow arbitrary websites to sniff a user's browsing history.
 It has been tested in Firefox and Chrome.
 
+More info available in my ToorCon 2015 slides:
+https://zyan.scripts.mit.edu/presentations/toorcon2015.pdf.
+
+## Demo
+
+Visit http://zyan.scripts.mit.edu/sniffly/ in Firefox/Chrome/Opera with HTTPS
+Everywhere disabled. If you use an ad blocker, a bunch of advertising domains
+will probably show up in the "Probably Visited column" (ignore them).
 
 ## How it works
 
 I recommend reading the inline comments in `src/index.js` to understand
-how Sniffly achieves a reliable timing attack in both FF and Chrome without
-polluting the local HSTS store (turns out this is non-trivial). tl;dr version:
+how Sniffly does a timing attack in both FF and Chrome without
+polluting the local HSTS store. tl;dr version:
 
 1. User visits Sniffly page
 2. Browser attempts to load images from various HSTS domains over HTTP
@@ -72,9 +80,9 @@ server {
 ```
 
 
-# Caveats
+## Caveats
 
-* Not supported yet in Safari or Chrome on iOS.
+* Not supported yet in Safari, IE, or Chrome on iOS.
 * Extensions such as HTTPS Everywhere will mess up results.
 * Doesn't work reliably in Tor Browser since timings are rounded to the nearest
   100-millisecond.
@@ -82,12 +90,12 @@ server {
   may not see accurate results.
 
 
-# Acknowledgements
+## Acknowledgements
 
 * Scott Helme for an initial list of HSTS hosts that he had found so I didn't
   have to scan the entire Alexa 1M.
 * Chris Palmer for advising on how to file a privacy bug in Chrome.
 * Dan Kaminsky and WhiteOps for sponsoring the ToorCon trip where this was
   presented.
-* Jan Schaumann and Chris Palmer for being early testers.
+* Jan Schaumann and Chris Rohlf for being early testers.
 * Everyone who let me sleep on their couch while I did this over my "vacation break". You know who you are!
