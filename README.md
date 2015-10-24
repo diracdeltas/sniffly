@@ -11,7 +11,7 @@ https://zyan.scripts.mit.edu/presentations/toorcon2015.pdf.
 
 Visit http://zyan.scripts.mit.edu/sniffly/ in Firefox/Chrome/Opera with HTTPS
 Everywhere disabled. If you use an ad blocker, a bunch of advertising domains
-will probably show up in the "Probably Visited column" (ignore them).
+will probably show up in the "Probably Visited" column (ignore them).
 
 ## How it works
 
