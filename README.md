@@ -73,12 +73,19 @@ server {
     server_name localhost;
     location / {
         root /path/to/sniffly/src;
-        add_header Content-Security-Policy "img-src http://*";
+        add_header Content-Security-Policy "img-src http:";
         index index.html;
     }
 }
 ```
 
+Or in `.htaccess`:
+
+```
+<IfModule mod_headers.c>
+Header set Content-Security-Policy "img-src http:"
+</IfModule>
+```
 
 ## Caveats
 
