@@ -90,7 +90,7 @@ Header set Content-Security-Policy "img-src http:"
 Or send the header via `php`.  
 Paste this at the start of the script (and change the name to index.php):
 
-```
+```php
 <?php
     $csp_rules = "img-src http:";
     // Just to ensure maximum compatibility
