@@ -87,6 +87,19 @@ Header set Content-Security-Policy "img-src http:"
 </IfModule>
 ```
 
+Or send the header via `php`.  
+Paste this at the start of the script (and change the name to index.php):
+
+```
+<?php
+    $csp_rules = "img-src http:";
+    // Just to ensure maximum compatibility
+    header('X-WebKit-CSP: '.$csp_rules);
+    header('X-Content-Security-Policy: '.$csp_rules);
+    header('Content-Security-Policy: '.$csp_rules);
+?>
+```
+
 ## Caveats
 
 * Not supported yet in Safari, IE, or Chrome on iOS.
