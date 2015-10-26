@@ -4,7 +4,7 @@
  * decides whether the domain is a previously-noted HSTS domain or not.
  * @author yan <yan@mit.edu>
  * @license MIT
- * @version 0.1.0
+ * @version 0.2.0
  */
 
 // Timing in milliseconds above which a network request probably occurred.
