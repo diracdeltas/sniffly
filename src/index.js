@@ -24,12 +24,14 @@ var OFFSET = 0;
 
 var visitedElem = document.getElementById('visited');
 var notVisitedElem = document.getElementById('not_visited');
+var disclaimer = document.getElementById('disclaimer');
 var isFirefox = (window.navigator.userAgent.indexOf('Firefox') !== -1);
 var visited = []; // list of hosts that are potentially visited
 
 // Edit this based on scraper results.
 var hosts =
 ['http://www.npmjs.com/',
+'http://savecrypto.org/',
 'http://www.xoom.com/',
 'http://atom.io/',
 'http://angel.co/',
@@ -512,7 +514,6 @@ if (!isFirefox) {
   // Chrome needs to do an extra timing confirmation step for results to be not
   // shitty. Wait 3 seconds for the async loads to mostly finish, then try one
   // synchrous load for each potentially-visited host.
-  var disclaimer = document.getElementById('disclaimer');
   disclaimer.style.display = '';
   window.setTimeout(function() {
     confirmVisited_(function(host, t) {
@@ -537,8 +538,27 @@ if (!isFirefox) {
     }, function() {
       disclaimer.style.color = 'green';
       disclaimer.innerText = 'Done!';
+      saveCrypto_(!notVisitedElem.querySelector('#savecrypto\\.org'));
     });
   }, 3000);
+} else {
+  window.setTimeout(function() {
+    saveCrypto_(visitedElem.querySelector('#savecrypto\\.org'));
+  }, 3000);
+}
+
+/**
+ * Tell the user to sign this awesome petition if they haven't visited it!
+ * Thank them if they have!
+ * @param {Boolean} signed
+ * @private
+ */
+function saveCrypto_(signed) {
+  var text = signed ? 'PS: Thanks for signing <a href="https://savecrypto.org">savecrypto.org</a>! <3' :
+    'PS: Tell Obama to support strong encryption! Sign the petition at <a href="https://savecrypto.org">savecrypto.org</a>.';
+  disclaimer.style.display = '';
+  disclaimer.style.color = 'blue';
+  disclaimer.innerHTML = text;
 }
 
 // Main loop
