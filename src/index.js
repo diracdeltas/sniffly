@@ -366,7 +366,8 @@ var hosts =
 'http://helloworld.letsencrypt.org/',
 'http://hoffman-andrews.com/',
 'http://jdkasten.com/',
-'http://jhalderm.com/'
+'http://jhalderm.com/',
+'http://jve.linuxwall.info/'
 ];
 
 /**
