@@ -2,7 +2,9 @@
 
 Sniffly is an attack that abuses HTTP Strict Transport Security and Content
 Security Policy to allow arbitrary websites to sniff a user's browsing history.
-It has been tested in Firefox and Chrome.
+It has been tested in Firefox and Chrome. UPDATE (12/20/15): Firefox and Chrome
+are fixing the underlying issue by removing support for the CSP directive that
+Sniffly abuses :). For instance, Sniffly no longer works in FF 43.
 
 More info available in my ToorCon 2015 slides:
 https://zyan.scripts.mit.edu/presentations/toorcon2015.pdf.
