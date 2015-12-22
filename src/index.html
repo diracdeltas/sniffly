@@ -1,7 +1,7 @@
 <html>
 <head>
     <!-- Abuse CSP to block HTTPS loads, increasing timing differentiation for HSTS vs non-HSTS hosts. :)
-         Note that this doesn't work in Firefox yet so you have to set the HTTP header in your server config file. -->
+         Note that meta CSP doesn't work in Firefox, which is fine since Sniffly 0.3+ doesn't use CSP in Firefox for timing differentiation. -->
     <meta http-equiv="Content-Security-Policy" content="img-src http:">
     <!-- For browsers that don't support CSP referer policy -->
     <meta name="referrer" content="never">
@@ -14,7 +14,7 @@
         <span style="padding:10px;"><a href="https://github.com/diracdeltas">github</a></span>
     </div>
     <div style="background-color: red; padding: 10px; font-weight: bold;">
-        Hello! This is a demo of <a href="https://github.com/diracdeltas/sniffly">Sniffly</a>, a practical timing attack to sniff browser history using HSTS in Chrome and older Firefoxes. Please disable <a href="https://eff.org/https-everywhere">HTTPS Everywhere</a> for best results.
+        Hello! This is a demo of <a href="https://github.com/diracdeltas/sniffly">Sniffly</a>, a practical timing attack to sniff browser history using HSTS in Chrome and Firefox. Please disable <a href="https://eff.org/https-everywhere">HTTPS Everywhere</a> for best results.
     </div>
     <div style="display: block; float: left; padding-right: 50px;" id="visited_container">
     <h3>Sites you've probably visited:</h3>
@@ -28,7 +28,7 @@
     </ul>
     </div>
 </div>
-    <script src="index.js">
-    </script>
+    <script src="hosts.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
