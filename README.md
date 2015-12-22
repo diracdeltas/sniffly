@@ -2,9 +2,9 @@
 
 Sniffly is an attack that abuses HTTP Strict Transport Security and Content
 Security Policy to allow arbitrary websites to sniff a user's browsing history.
-It has been tested in Firefox and Chrome. UPDATE (12/20/15): Firefox and Chrome
-are fixing the underlying issue by removing support for the CSP directive that
-Sniffly abuses :). For instance, Sniffly no longer works in FF 43.
+It has been tested in Firefox and Chrome. UPDATE (12/20/15): Firefox has fixed the underlying issue by removing support for the CSP directive that
+Sniffly abuses; Chrome stable will do so soon. As a workaround, Sniffly 0.3+ is now using
+https://code.google.com/p/chromium/issues/detail?id=436451 in Firefox.
 
 More info available in my ToorCon 2015 slides:
 https://zyan.scripts.mit.edu/presentations/toorcon2015.pdf.
@@ -18,7 +18,7 @@ will probably show up in the "Probably Visited" column (ignore them).
 ## How it works
 
 I recommend reading the inline comments in `src/index.js` to understand
-how Sniffly does a timing attack in both FF and Chrome without
+how Sniffly does a timing attack in Chrome without
 polluting the local HSTS store. tl;dr version:
 
 1. User visits Sniffly page
@@ -36,6 +36,7 @@ polluting the local HSTS store. tl;dr version:
    milliseconds, then a network request probably occurred, meaning that the
    user hasn't visited the image's domain.
 
+In Firefox, Sniffly 0.3+ simply uses crbug436451 (not found by me).
 
 ### Finding HSTS hosts
 
