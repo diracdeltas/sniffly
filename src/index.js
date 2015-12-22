@@ -198,11 +198,11 @@ function displayFirefox(url, visited) {
 }
 
 
-disclaimer.style.display = '';
 if (!isFirefox) {
   // Chrome needs to do an extra timing confirmation step for results to be not
   // shitty. Wait 3 seconds for the async loads to mostly finish, then try one
   // synchrous load for each potentially-visited host.
+  disclaimer.style.display = '';
   window.setTimeout(function() {
     confirmVisitedChrome_(function(host, t) {
       if (!disclaimer.done_) {
@@ -236,6 +236,9 @@ if (!isFirefox) {
 } else {
   // Main loop for Firefox
   window.HOSTS.forEach(function(url) {
+    if (window.BLACKLIST_HOSTS.includes(url)) {
+      return;
+    }
     // This method is slow, but it works even with newer Firefoxes that have
     // fixed the original sniffly attack.
     url = getFaviconPort443_(url);
@@ -244,6 +247,4 @@ if (!isFirefox) {
     img.onload = displayFirefox.bind(this, url, true);
     img.src = url;
   });
-  disclaimer.style.color = 'green';
-  disclaimer.innerText = 'Done!';
 }

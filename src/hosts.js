@@ -336,3 +336,21 @@ window.HOSTS =
 'http://jhalderm.com/',
 'http://jve.linuxwall.info/'
 ];
+
+// These hosts are too slow on port 443, so skip them in Firefox
+window.BLACKLIST_HOSTS = [
+'http://www.abnamro.nl/nl/index.html',
+'http://www.veikkaus.fi/',
+'http://www.test.de/',
+'http://www.physicsforums.com/',
+'http://www.popads.net/',
+'http://www.mql5.com/',
+'http://join.me/',
+'http://www.eobot.com',
+'http://skandiabanken.no/',
+'http://www.outlook.com/owa/',
+'http://www.office.com/',
+'http://secure.logmein.com/',
+'http://www.lotterypost.com/',
+'http://mail.live.com/default.aspx'
+];
