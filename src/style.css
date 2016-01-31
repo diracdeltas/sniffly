@@ -1,0 +1,54 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+}
+#not_visited li{
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+#not_visited li:hover{
+  color: green;
+  font-size: 24px;
+}
+#visited li{
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+#visited li:hover{
+  color: green;
+  font-size: 24px;
+}
+h3{
+  color: white;
+  text-align: center;
+}
+#visited_container{
+  display: block;
+  float: left;
+  padding-left: 50px;
+}
+#not_visited_container{
+  display: block;
+  float: right;
+  padding-right: 50px;
+}
+#navbar{
+  background-color:lightgray;
+  padding: 5px;
+  text-align:right;
+  font-size:18px;
+}
+#info{
+  background-color: red;
+  padding: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+#disclaimer{
+  display:none;
+  color:red;
+  font-weight:bold;
+}
