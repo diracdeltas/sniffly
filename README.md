@@ -1,4 +1,7 @@
-# Sniffly
+# Sniffly (CVE-2016-1617)
+
+**UPDATE (3/10/16): This vulnerability has been
+[fixed](https://bugs.chromium.org/p/chromium/issues/detail?id=544765) as of Chrome 48.**
 
 Sniffly is an attack that abuses HTTP Strict Transport Security and Content
 Security Policy to allow arbitrary websites to sniff a user's browsing history.
@@ -122,3 +125,4 @@ Paste this at the start of the script (and change the name to index.php):
   presented.
 * Jan Schaumann and Chris Rohlf for being early testers.
 * Everyone who let me sleep on their couch while I did this over my "vacation break". You know who you are!
+* Chrome Security for awarding me a $500 bug bounty
