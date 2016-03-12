@@ -1,34 +1,52 @@
 <html>
-<head>
-    <!-- Abuse CSP to block HTTPS loads, increasing timing differentiation for HSTS vs non-HSTS hosts. :)
-         Note that meta CSP doesn't work in Firefox, which is fine since Sniffly 0.3+ doesn't use CSP in Firefox for timing differentiation. -->
-    <meta http-equiv="Content-Security-Policy" content="img-src http:">
-    <!-- For browsers that don't support CSP referer policy -->
-    <meta name="referrer" content="never">
-</head>
-<body>
-<div id="content">
-    <div style="background-color:lightgray; padding: 5px; text-align:right; font-size:18px">
-        <span style="padding:10px;"><a href="https://zyan.scripts.mit.edu/blog/">blog</a></span>
-        <span style="padding:10px"><a href="https://twitter.com/bcrypt">twitter</a></span>
-        <span style="padding:10px;"><a href="https://github.com/diracdeltas">github</a></span>
+  <head>
+      <!-- Abuse CSP to block HTTPS loads, increasing timing differentiation for HSTS vs non-HSTS hosts. :)
+           Note that meta CSP doesn't work in Firefox, which is fine since Sniffly 0.3+ doesn't use CSP in Firefox for timing differentiation. -->
+      <meta http-equiv="Content-Security-Policy" content="img-src http:">
+      <!-- For browsers that don't support CSP referer policy -->
+      <meta name="referrer" content="never">
+      <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+
+    <div id="content">
+        <!-- Navbar Block -->
+        <div id="navbar">
+            <span style="padding:10px;"><a href="https://zyan.scripts.mit.edu/blog/">blog</a></span>
+            <span style="padding:10px"><a href="https://twitter.com/bcrypt">twitter</a></span>
+            <span style="padding:10px;"><a href="https://github.com/diracdeltas">github</a></span>
+        </div>
+        <!-- Navbar Block -->
+
+        <!-- Info Block -->
+        <div id="info">
+            Hello! This is a demo of <a href="https://github.com/diracdeltas/sniffly">Sniffly</a>, a practical timing attack to sniff browser history using HSTS in Chrome and Firefox. Please disable <a href="https://eff.org/https-everywhere">HTTPS Everywhere</a> for best results.
+        </div>
+        <!-- Info Block -->
+
+        <!-- Visited Block -->
+        <div id="visited_container">
+        <h3>Sites you've probably visited:</h3>
+        <div id="disclaimer">Calculating (may take several seconds) . . .</div>
+        <ul id="visited">
+        </ul>
+        </div>
+        <!-- Visited Block -->
+
+
+        <!-- Not Visited Block -->
+        <div id="not_visited_container">
+        <h3>Sites you probably haven't visited:</h3>
+        <ul id="not_visited">
+        </ul>
+        </div>
+        <!-- Not Visited Block -->
     </div>
-    <div style="background-color: red; padding: 10px; font-weight: bold;">
-        Hello! This is a demo of <a href="https://github.com/diracdeltas/sniffly">Sniffly</a>, a practical timing attack to sniff browser history using HSTS in Chrome and Firefox. Please disable <a href="https://eff.org/https-everywhere">HTTPS Everywhere</a> for best results.
-    </div>
-    <div style="display: block; float: left; padding-right: 50px;" id="visited_container">
-    <h3>Sites you've probably visited:</h3>
-    <div id="disclaimer" style="display:none; color:red; font-weight:bold;">Calculating (may take several seconds) . . .</div>
-    <ul id="visited">
-    </ul>
-    </div>
-    <div style="display: block; float: left;" id="not_visited_container">
-    <h3>Sites you probably haven't visited:</h3>
-    <ul id="not_visited">
-    </ul>
-    </div>
-</div>
+
+    <!-- Scripts -->
     <script src="hosts.js"></script>
     <script src="index.js"></script>
-</body>
+    <!-- Scripts -->
+
+  </body>
 </html>
