@@ -354,3 +354,21 @@ window.BLACKLIST_HOSTS = [
 'http://www.lotterypost.com/',
 'http://mail.live.com/default.aspx'
 ];
+
+window.IGNORE_HOSTS = [
+  'www.sofort.com',
+  'www.crazydomains.com.au',
+  'wikitech.wikimedia.org',
+  'creditkarma.com',
+  'www.englishforums.com',
+  'www.baifubao.com',
+  'www.djangoproject.com',
+  'land.nrw',
+  'www.flipkey.com',
+  'namu.wiki',
+  'coursera.org',
+  'www.cloudflare.com',
+  'yawnbox.com',
+  'titanous.com',
+  'jhalderm.com'
+];

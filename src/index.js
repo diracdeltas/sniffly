@@ -198,53 +198,21 @@ function displayFirefox(url, visited) {
 }
 
 
-if (!isFirefox) {
-  // Chrome needs to do an extra timing confirmation step for results to be not
-  // shitty. Wait 3 seconds for the async loads to mostly finish, then try one
-  // synchrous load for each potentially-visited host.
-  disclaimer.style.display = '';
-  window.setTimeout(function() {
-    confirmVisitedChrome_(function(host, t) {
-      if (!disclaimer.done_) {
-        disclaimer.style.color = 'orange';
-        disclaimer.innerText = 'Removing false positives . . .';
-        disclaimer.done_ = true;
-      }
-      var elem = document.getElementById(host);
-      if (!elem) {
-        console.warn('No element found', host);
-        return;
-      }
-      if (t <= TIMING_CONFIRM_THRESHOLD / 2) {
-        console.log('showing', host, t);
-        elem.style.color = '';
-      } else {
-        console.log('hiding', host, t);
-        elem.style.display = 'none';
-        notVisitedElem.appendChild(elem);
-      }
-    }, function() {
-      disclaimer.style.color = 'green';
-      disclaimer.innerText = 'Done!';
-    });
-  }, 3000);
-  // Main loop for Chrome
-  window.HOSTS.forEach(function(url) {
-    calibrateTimeChrome_();
-    timeRequestChrome_(url);
-  });
-} else {
-  // Main loop for Firefox
-  window.HOSTS.forEach(function(url) {
-    if (window.BLACKLIST_HOSTS.includes(url)) {
+window.HOSTS.forEach(function(url) {
+  if (window.BLACKLIST_HOSTS.includes(url)) {
+    return;
+  }
+  for (var i = 0; i < window.IGNORE_HOSTS.length; i++) {
+    let host = window.IGNORE_HOSTS[i];
+    if (url.includes(host)) {
       return;
     }
-    // This method is slow, but it works even with newer Firefoxes that have
-    // fixed the original sniffly attack.
-    url = getFaviconPort443_(url);
-    var img = new Image();
-    img.onerror = displayFirefox.bind(this, url, false);
-    img.onload = displayFirefox.bind(this, url, true);
-    img.src = url;
-  });
-}
+  }
+  // This method is slow, but it works even with newer Firefoxes that have
+  // fixed the original sniffly attack.
+  url = getFaviconPort443_(url);
+  var img = new Image();
+  img.onerror = displayFirefox.bind(this, url, false);
+  img.onload = displayFirefox.bind(this, url, true);
+  img.src = url;
+});
