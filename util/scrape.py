@@ -9,6 +9,7 @@ from twisted.internet import reactor
 from twisted.web.http_headers import Headers
 from itertools import islice
 import sys
+import re
 
 
 class CustomRedirectAgent(RedirectAgent):
@@ -77,21 +78,16 @@ def main():
     i = 0
     start = int(sys.argv[1])
 
-    # This list of likely sts hosts is thanks to a web scan from mid-2015
-    # by Scott Helme (https://scotthelme.co.uk). You may wish to substitute your
-    # own list.
+    # list of https hosts
     with open('strict-transport-security.txt') as stsfile:
         for line in islice(stsfile, start, start + max_req):
             i = i + 1
             if i > max_req:
                 break
-            domain = line.strip()
+            domain = re.sub(r'^.+?\s+', '', line.strip())
             d = agent.request('GET', 'http://' + domain + '/',
-                              Headers({'User-Agent':
-                                       ['Mozilla/5.0 (Macintosh; Intel Mac OS' +
-                                        ' X 10_10_4) AppleWebKit/537.36 ' +
-                                        '(KHTML, like Gecko) ' +
-                                        'Chrome/45.0.2454.99 Safari/537.36']}))
+                              Headers({'User-Agent': ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36']
+                                    }))
             d.addErrback(logerr)
         reactor.run()
 
