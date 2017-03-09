@@ -1,110 +1,14 @@
-# Sniffly (CVE-2016-1617)
+# Sniffly2
 
-**UPDATE (3/10/16): This vulnerability has been
-[fixed](https://bugs.chromium.org/p/chromium/issues/detail?id=544765) as of Chrome 48.**
-
-Sniffly is an attack that abuses HTTP Strict Transport Security and Content
-Security Policy to allow arbitrary websites to sniff a user's browsing history.
-It has been tested in Firefox and Chrome. UPDATE (12/20/15): Firefox has fixed the underlying issue by removing support for the CSP directive that
-Sniffly abuses; Chrome stable will do so soon. As a workaround, Sniffly 0.3+ is now using
-https://code.google.com/p/chromium/issues/detail?id=436451 in Firefox.
-
-More info available in my ToorCon 2015 slides:
-https://zyan.scripts.mit.edu/presentations/toorcon2015.pdf.
+Sniffly2 is a variant of [Sniffly](https://github.com/diracdeltas/sniffly)
+which abuses HTTP Strict Transport Security headers in order to sniff your
+browsing history.
 
 ## Demo
 
-Visit http://zyan.scripts.mit.edu/sniffly/ in Firefox/Chrome/Opera with HTTPS
+Visit https://diracdeltas.github.io/sniffly in Firefox/Chrome/Opera/Brave/etc. with HTTPS
 Everywhere disabled. If you use an ad blocker, a bunch of advertising domains
 will probably show up in the "Probably Visited" column (ignore them).
-
-## How it works
-
-I recommend reading the inline comments in `src/index.js` to understand
-how Sniffly does a timing attack in Chrome without
-polluting the local HSTS store. tl;dr version:
-
-1. User visits Sniffly page
-2. Browser attempts to load images from various HSTS domains over HTTP
-3. Sniffly sets a CSP policy that restricts images to HTTP, so image sources
-   are blocked before they are redirected to HTTPS. This is crucial! If the
-   browser completes a request to the HTTPS site, then it will receive the HSTS
-   pin, and the attack will no longer work when the user visits Sniffly.
-4. When an image gets blocked by CSP, its `onerror` handler is called. In
-   this case, the `onerror` handler does some fancy tricks to time how long it
-   took for the image to be redirected from HTTP to HTTPS. If this time is on
-   the order of a millisecond, it was an HSTS redirect (no network request was
-   made), which means the user
-   has visited the image's domain before. If it's on the order of 100
-   milliseconds, then a network request probably occurred, meaning that the
-   user hasn't visited the image's domain.
-
-In Firefox, Sniffly 0.3+ simply uses crbug436451 (not found by me).
-
-### Finding HSTS hosts
-
-To scrape an included list of sites (`util/strict-transport-security.txt`, courtesy Scott Helme) to determine which hosts send HSTS headers, do:
-
-```
-$ cd util
-$ ./run.sh <number_of_batches> > results.log
-```
-
-where 1 batch is 100 sites. You can override
-`util/strict-transport-security.txt` with a different list, such as the full
-Alexa Top 1M, if you want.
-
-To process and sort the results by max-age, excluding ones with max-age less
-than 1 day and ones that are preloaded:
-
-```
-$ cd util
-$ ./process.py <results_file> > processed.log
-```
-
-Once that's done, you can copy the hosts from `processed.log` into
-`src/index.js`.
-
-
-### Running sploitz
-
-Visiting `file:///path/to/sniffly/src/index.html` in Chrome should just work.
-In Firefox, CSP headers using the <meta> tag are apparently not supported yet,
-so you need to set up a local webserver to serve the CSP HTTP response
-header. My Nginx server block looks something like this:
-
-```
-server {
-    listen 8081;
-    server_name localhost;
-    location / {
-        root /path/to/sniffly/src;
-        add_header Content-Security-Policy "img-src http:";
-        index index.html;
-    }
-}
-```
-
-Or in `.htaccess`:
-
-```
-<IfModule mod_headers.c>
-Header set Content-Security-Policy "img-src http:"
-</IfModule>
-```
-
-Or send the header via `php`.  
-Paste this at the start of the script (and change the name to index.php):
-
-```php
-<?php
-    $csp_rules = "img-src http:";
-    // Just to ensure maximum compatibility
-    header('X-WebKit-CSP: '.$csp_rules);
-    header('X-Content-Security-Policy: '.$csp_rules);
-    header('Content-Security-Policy: '.$csp_rules);
-?>
-```
 
 ## Caveats
 
@@ -118,11 +22,5 @@ Paste this at the start of the script (and change the name to index.php):
 
 ## Acknowledgements
 
-* Scott Helme for an initial list of HSTS hosts that he had found so I didn't
-  have to scan the entire Alexa 1M.
-* Chris Palmer for advising on how to file a privacy bug in Chrome.
-* Dan Kaminsky and WhiteOps for sponsoring the ToorCon trip where this was
-  presented.
-* Jan Schaumann and Chris Rohlf for being early testers.
-* Everyone who let me sleep on their couch while I did this over my "vacation break". You know who you are!
-* Chrome Security for awarding me a $500 bug bounty
+* [crbug436451](https://bugs.chromium.org/p/chromium/issues/detail?id=436451), reported by `imfaster...@gmail.com`
+* Scott Helme for providing an initial list of HSTS hosts
