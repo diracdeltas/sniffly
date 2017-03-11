@@ -8,7 +8,7 @@
 
 // redirect to HTTP to avoid mixed content blocking :(
 if (window.location.protocol === 'https:') {
-  window.location.protocol === 'http:'
+  window.location.assign(window.location.href.replace('https:', 'http:'))
 }
 
 const visited = {}
@@ -31,7 +31,7 @@ function test () {
   const notVisitedElem = document.getElementById('not_visited')
   button.onclick = () => {
     window.location.hash = '#start'
-    window.location.reload()
+    window.location.reload(true)
   }
   if (!window.fetch || !window.performance) {
     window.alert('please try a newer browser.')
