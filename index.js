@@ -6,6 +6,11 @@
  * @version 0.4.0
  */
 
+// redirect to HTTP to avoid mixed content blocking :(
+if (window.location.protocol === 'https:') {
+  window.location.protocol === 'http:'
+}
+
 const visited = {}
 
 /**
