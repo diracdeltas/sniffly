@@ -40,8 +40,9 @@ function test () {
     node.style.display = 'block'
   })
   document.getElementById('disclaimer').style.display = 'block'
+  window.performance.setResourceTimingBufferSize(1000)
   window.HOSTS.forEach(function (url, i) {
-    if (window.BLACKLIST_HOSTS.includes(url) || url.includes('airbnb')) {
+    if (window.BLACKLIST_HOSTS.includes(url) || url.includes('airbnb') || url.length > 33) {
       return
     }
     window.fetch(url, {mode: 'no-cors'}).then(() => {
