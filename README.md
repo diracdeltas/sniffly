@@ -1,6 +1,7 @@
 # Sniffly2
 
-Sniffly2 is a variant of [Sniffly](http://github.com/diracdeltas/sniffly)
+Sniffly2 is a variant of
+[Sniffly](https://github.com/diracdeltas/sniffly/tree/master)
 which abuses HTTP Strict Transport Security headers and the Performance Timing
 API in order to sniff your browsing history in Chromium-based browsers.
 
