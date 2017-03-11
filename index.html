@@ -1,35 +1,36 @@
 <html>
 <head>
-    <!-- Abuse CSP to block HTTPS loads, increasing timing differentiation for HSTS vs non-HSTS hosts. :)
-         Note that meta CSP doesn't work in Firefox, which is fine since Sniffly 0.3+ doesn't use CSP in Firefox for timing differentiation. -->
-    <meta http-equiv="Content-Security-Policy" content="img-src http:">
-    <!-- For browsers that don't support CSP referer policy -->
     <meta name="referrer" content="never">
     <title>Sniffly2</title>
+    <script src="hosts.js"></script>
+    <script src="blacklist.js"></script>
+    <script src="index.js"></script>
 </head>
 <body>
+<a href="https://github.com/diracdeltas/sniffly/tree/gh-pages" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
 <div id="content">
-    <div style="background-color:lightgray; padding: 5px; text-align:right; font-size:18px">
+    <div style="background-color:lightgray; padding: 5px; font-size:18px">
         <span style="padding:10px;"><a href="https://diracdeltas.github.io/blog/">blog</a></span>
         <span style="padding:10px"><a href="https://twitter.com/bcrypt">twitter</a></span>
         <span style="padding:10px;"><a href="https://github.com/diracdeltas">github</a></span>
     </div>
-    <div style="background-color: red; padding: 10px; font-weight: bold;">
-        Hello! This is a demo of sniffing browser history using HSTS in Chrome and Firefox using crbug436451. Please disable <a href="https://eff.org/https-everywhere">HTTPS Everywhere</a> for best results.
+    <div style="padding: 10px; font-weight: bold; font-size: 18px; margin-top: 20px; margin-right:30px;">
+        Hello! This is a demo of sniffing browser history using HSTS. Please disable <a href="https://eff.org/https-everywhere">HTTPS Everywhere</a> for best results.
     </div>
-    <div style="display: block; float: left; padding-right: 50px;" id="visited_container">
-    <h3>Sites you've probably visited:</h3>
-    <div id="disclaimer" style="display:none; color:red; font-weight:bold;">Calculating (may take several seconds) . . .</div>
+    <div>
+    <button style="padding: 10px; margin: 10px; font-size: 18px;">Click me to start!</button>
+    </div>
+
+    <div style="display: block; float: left; padding-right: 50px; margin-left: 10px" id="visited_container">
+    <h3 style='display:none;'>Sites you've probably visited:</h3>
     <ul id="visited">
     </ul>
     </div>
     <div style="display: block; float: left;" id="not_visited_container">
-    <h3>Sites you probably haven't visited:</h3>
+    <h3 style='display:none;'>Sites you probably haven't visited:</h3>
     <ul id="not_visited">
     </ul>
     </div>
 </div>
-    <script src="hosts.js"></script>
-    <script src="index.js"></script>
 </body>
 </html>

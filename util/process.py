@@ -31,7 +31,7 @@ def get_url_and_max_age(line):
         sys.stderr.write('Malformed entry, ignoring: ' + line + '\n')
         return {}
     # This is not very optimal; parsed should always have only one entry.
-    return {k: get_max_age_(v) for k, v in parsed.iteritems()}
+    return {urlparse(k).hostname: get_max_age_(v) for k, v in parsed.iteritems()}
 
 
 def get_max_age_(directives):
@@ -64,12 +64,12 @@ def main():
             results_dict.update(get_url_and_max_age(line))
     # Filter out preloaded entries. TODO: Check includeSubdomains
     filtered = {k: v for (k, v) in results_dict.iteritems()
-                if not urlparse(k).hostname in preloads}
+                if not k in preloads}
     # A list of tuples ordered from highest to lowest max-age
     final = sorted(filtered.items(), key=operator.itemgetter(1), reverse=True)
-    for url, time in final:
+    for host, time in final:
         if time >= 86400:
-            print '"' + url + '",'
+            print '"http://' + host + ':443/favicon.ico",'
 
 
 if __name__ == "__main__":
