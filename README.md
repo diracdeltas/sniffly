@@ -8,10 +8,13 @@ API in order to sniff your browsing history in Chromium-based browsers.
 ## Demo
 
 Visit http://diracdeltas.github.io/sniffly in Chrome/Chromium/Brave/etc. with HTTPS
-Everywhere disabled. If you use an ad blocker, some advertising domains
-will probably show up in the "Probably Visited" column (ignore them).
+Everywhere disabled.
 
-Note that this will not work over HTTPS because of mixed content blocking.
+Caveats:
+
+* does not work on mobile or Firefox
+* does not work over HTTPS due to mixed content blocking.
+* adblockers may taint results
 
 ## Acknowledgements
 
