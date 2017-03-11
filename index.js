@@ -1,6 +1,6 @@
 /**
- * @fileoverview This file uses crbug436451 to tell whether the domain is in
- * HSTS by looking at the onload/onerror events.
+ * @fileoverview This file uses HSTS window.performance reporting to tell
+* whether a domain has been visited.
  * @author yan <yan@mit.edu>
  * @license MIT
  * @version 0.4.0
@@ -8,7 +8,10 @@
 
 // redirect to HTTP to avoid mixed content blocking :(
 if (window.location.protocol === 'https:') {
-  window.location.assign(window.location.href.replace('https:', 'http:'))
+  window.alert('This site does not work over HTTPS due to mixed content blocking. Please disable HTTPS Everywhere.')
+  setTimeout(() => {
+    window.location.assign(window.location.href.replace('https:', 'http:'))
+  }, 5000)
 }
 
 const visited = {}
@@ -42,7 +45,8 @@ function test () {
   document.getElementById('disclaimer').style.display = 'block'
   window.performance.setResourceTimingBufferSize(1000)
   window.HOSTS.forEach(function (url, i) {
-    if (window.BLACKLIST_HOSTS.includes(url) || url.includes('airbnb') || url.length > 33) {
+    if (window.BLACKLIST_HOSTS.includes(url) || url.length > 33) {
+      // These hosts are too flakey or obscure
       return
     }
     window.fetch(url, {mode: 'no-cors'}).then(() => {
