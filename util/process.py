@@ -66,8 +66,8 @@ def main():
     filtered = {k: v for (k, v) in results_dict.iteritems()
                 if not k in preloads}
     # A list of tuples ordered from highest to lowest max-age
-    final = sorted(filtered.items(), key=operator.itemgetter(1), reverse=True)
-    for host, time in final:
+    # final = sorted(filtered.items(), key=operator.itemgetter(1), reverse=True)
+    for host, time in filtered.items():
         if time >= 86400:
             print '"http://' + host + ':443/favicon.ico",'
 
