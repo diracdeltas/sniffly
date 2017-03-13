@@ -83,6 +83,10 @@ const blacklist = [
   'www.principal.com',
   'www.rossmann.de',
   'www.sskm.de',
+  'monova.org',
+  'ukpirate.click',
+  'ukpirateproxy.xyz',
+  'avxhome.se',
   'www.rb24.ir'
 ]
 
